@@ -23,6 +23,8 @@ public class Main {
 
 	private final String USAGE_PREFIX 		= "Usage: jbake";
 	private final String ALT_USAGE_PREFIX	= "   or  jbake";
+    Baker baker = new Baker();
+    WatchFolder watcher = new WatchFolder();
 	
 	/**
 	 * Runs the app with the given arguments.
@@ -33,27 +35,7 @@ public class Main {
 		new Main().run(args);
 	}
 	
-	private void bake(LaunchOptions options) {
-		try {
-			Oven oven = new Oven(options.getSource(), options.getDestination(), options.isClearCache());
-			oven.setupPaths();
-			oven.bake();
-			final List<String> errors = oven.getErrors();
-			if (!errors.isEmpty()) {
-				// TODO: decide, if we want the all error here
-				System.err.println(MessageFormat.format("JBake failed with {0} errors:", errors.size()));
-				int errNr = 1;
-				for (String msg : errors) {
-					System.err.println(MessageFormat.format("{0}. {1}", errNr, msg));
-					++errNr;
-				}
-				System.exit(1);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-	}
+
 
 	private void run(String[] args) {
 		LaunchOptions res = parseArguments(args);
@@ -74,7 +56,7 @@ public class Main {
 		}
 		
 		if(res.isBake()) {
-			bake(res);
+			baker.bake(res);
 		}
 
 		if (res.isInit()) {
@@ -86,11 +68,16 @@ public class Main {
 				initStructure(config, "freemarker");
 			}
 		}
+
+        if (res.isWatchFolder() ){
+            watcher.run( "./templates", res);
+        }
 		
 		if (res.isRunServer()) {
 			if (res.getSource().getPath().equals(".")) {
 				// use the default destination folder
 				runServer(config.getString("destination.folder"), config.getString("server.port"));
+
 			} else {
 				runServer(res.getSource().getPath(), config.getString("server.port"));
 			}
@@ -124,6 +111,7 @@ public class Main {
 	}
 
 	private void runServer(String path, String port) {
+//        WatchFolder.run()
 		JettyServer.run(path, port);
 		System.exit(0);
 	}
