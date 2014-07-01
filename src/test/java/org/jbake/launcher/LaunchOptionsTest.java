@@ -38,6 +38,25 @@ public class LaunchOptionsTest {
 		Assert.assertTrue(res.isRunServer());
 		assertThat(res.getSource()).isEqualTo(new File("/tmp"));
 	}
+
+    @Test
+    public void watchDefaultFolder()throws Exception {
+        String[] args = {"-w"};
+        LaunchOptions res = new LaunchOptions();
+        CmdLineParser parser = new CmdLineParser(res);
+        parser.parseArgument(args);
+        Assert.assertTrue(res.isWatchFolder());
+    }
+
+    @Test
+    public void watchServerFolder()throws Exception {
+        String[] args = {"-w", "-s", "/tmp"};
+        LaunchOptions res = new LaunchOptions();
+        CmdLineParser parser = new CmdLineParser(res);
+        parser.parseArgument(args);
+        Assert.assertTrue(res.isWatchFolder());
+        assertThat(res.getSource()).isEqualTo(new File("/tmp"));
+    }
 	
 	@Test
 	public void init() throws Exception {
@@ -48,6 +67,15 @@ public class LaunchOptionsTest {
 		
 		Assert.assertTrue(res.isInit());
 	}
+
+    @Test
+    public void watchFolder()throws Exception {
+        String[] args = {"-w"};
+        LaunchOptions res = new LaunchOptions();
+        CmdLineParser parser = new CmdLineParser(res);
+        parser.parseArgument(args);
+        Assert.assertTrue(res.isWatchFolder());
+    }
 	
 	@Test
 	public void bake() throws Exception {
